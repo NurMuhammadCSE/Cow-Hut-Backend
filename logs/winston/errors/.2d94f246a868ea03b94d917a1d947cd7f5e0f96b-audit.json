@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\.2d94f246a868ea03b94d917a1d947cd7f5e0f96b-audit.json",
+    "files": [
+        {
+            "date": 1687023188503,
+            "name": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\DCH-2023-17-06-23-error.log",
+            "hash": "f74a4dbd6777a20bd41627b3f1515efe8469c286758c7805069a502b0030de6c"
+        }
+    ],
+    "hashType": "sha256"
+}
