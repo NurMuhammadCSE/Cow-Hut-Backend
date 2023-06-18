@@ -1,8 +1,8 @@
-//app.ts
 import express, { Application, NextFunction, Request, Response } from 'express';
 const app: Application = express();
 import cors from 'cors';
 import httpStatus from 'http-status';
+import router from './routes';
 
 app.use(cors());
 
@@ -13,6 +13,8 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!');
 });
+
+app.use('/api/v1/', router);
 
 // Handle Not Found
 app.use((req: Request, res: Response, next: NextFunction) => {
