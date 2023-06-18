@@ -1,14 +1,12 @@
 import { Model } from 'mongoose';
 
-type IName = {
-  firstName: string;
-  lastName: string;
-};
-
 export type IUser = {
   role: 'seller' | 'buyer';
   password: string;
-  name: IName;
+  name: {
+    firstName: string;
+    lastName: string;
+  };
   phoneNumber: string;
   address: string;
   budget: number;
