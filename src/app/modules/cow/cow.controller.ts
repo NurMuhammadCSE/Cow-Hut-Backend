@@ -5,6 +5,7 @@ import httpStatus from 'http-status';
 import { CowService } from './cow.service';
 import pick from '../../../shared/pick';
 import { paginationFields } from '../../../constants/pagination';
+import { ICow } from './cow.interface';
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
   const { user } = req.body;
@@ -25,7 +26,7 @@ const getAllCows = catchAsync(
     const paginationOptions = pick(req.query, paginationFields);
 
     const result = await CowService.getAllCows(filters, paginationOptions);
-    sendResponse(res, {
+    sendResponse<ICow[]>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Cow retrieved successfully!',
@@ -41,7 +42,7 @@ const getSingleCow = catchAsync(
     const id = req.params.id;
 
     const result = await CowService.getSingleCow(id);
-    sendResponse(res, {
+    sendResponse<ICow>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Cow get successfully!',
@@ -51,8 +52,23 @@ const getSingleCow = catchAsync(
   }
 );
 
+const updateCow = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const updatedData = req.body;
+
+  const result = await CowService.updateCow(id, updatedData);
+
+  sendResponse<ICow>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Cow updated successfully !',
+    data: result,
+  });
+});
+
 export const cowsController = {
   createUser,
   getAllCows,
   getSingleCow,
+  updateCow,
 };

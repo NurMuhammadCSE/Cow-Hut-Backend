@@ -8,4 +8,6 @@ router.get('/:id', cowsController.getSingleCow);
 
 router.get('/', cowsController.getAllCows);
 
+router.patch('/:id', cowsController.updateCow);
+
 export const CowsRoutes = router;
