@@ -3,6 +3,7 @@ const app: Application = express();
 import cors from 'cors';
 import httpStatus from 'http-status';
 import router from './routes';
+import globalErrorHandler from './app/middleware/globalErrorHandler';
 
 app.use(cors());
 
@@ -30,5 +31,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   });
   next();
 });
+
+// Global Error Handler
+app.use(globalErrorHandler);
 
 export default app;
