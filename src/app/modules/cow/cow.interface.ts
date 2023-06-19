@@ -26,4 +26,8 @@ export type ICow = {
   category: 'Dairy' | 'Beef' | 'DualPurpose';
 };
 
+export type ICowFilters = {
+  searchTerm?: string;
+};
+
 export type CowModel = Model<ICow, Record<string, unknown>>;
