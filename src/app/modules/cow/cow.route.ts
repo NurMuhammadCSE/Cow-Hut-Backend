@@ -10,4 +10,6 @@ router.get('/', cowsController.getAllCows);
 
 router.patch('/:id', cowsController.updateCow);
 
+router.delete('/:id', cowsController.deleteCow);
+
 export const CowsRoutes = router;
