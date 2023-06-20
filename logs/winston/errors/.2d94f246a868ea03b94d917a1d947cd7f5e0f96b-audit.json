@@ -1,45 +1,45 @@
 {
-    "keep": {
-        "days": true,
-        "amount": 14
+  "keep": {
+    "days": true,
+    "amount": 14
+  },
+  "auditLog": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\.2d94f246a868ea03b94d917a1d947cd7f5e0f96b-audit.json",
+  "files": [
+    {
+      "date": 1687023188503,
+      "name": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\DCH-2023-17-06-23-error.log",
+      "hash": "f74a4dbd6777a20bd41627b3f1515efe8469c286758c7805069a502b0030de6c"
     },
-    "auditLog": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\.2d94f246a868ea03b94d917a1d947cd7f5e0f96b-audit.json",
-    "files": [
-        {
-            "date": 1687023188503,
-            "name": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\DCH-2023-17-06-23-error.log",
-            "hash": "f74a4dbd6777a20bd41627b3f1515efe8469c286758c7805069a502b0030de6c"
-        },
-        {
-            "date": 1687045908271,
-            "name": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\DCH-2023-18-06-05-error.log",
-            "hash": "76576b8c471c00952614eae2b7efa28fb6e5a540270a7edcc310404364e01784"
-        },
-        {
-            "date": 1687046672192,
-            "name": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\DCH-2023-18-06-06-error.log",
-            "hash": "443a1beb6f3f3829e68fb559948e9a888a875b90bf0373d6f60f117c2253b702"
-        },
-        {
-            "date": 1687085153360,
-            "name": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\DCH-2023-18-06-16-error.log",
-            "hash": "a16781ed666fcc89e95aa6afcfdfa5b407b464516ee018c49ef8e07717647798"
-        },
-        {
-            "date": 1687192931541,
-            "name": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\DCH-2023-19-06-22-error.log",
-            "hash": "0308197efa3852f88d492d07b244e61c638ec2bd2d625c931b1828629337b492"
-        },
-        {
-            "date": 1687194251947,
-            "name": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\DCH-2023-19-06-23-error.log",
-            "hash": "57743c12a414b60b2bd3752043e90810238e46149cc21f0409151f7f8509e3d8"
-        },
-        {
-            "date": 1687257143093,
-            "name": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\DCH-2023-20-06-16-error.log",
-            "hash": "5268e84ebcd65405df8045d54b280f23a43eabd3f1fc33e6ec2b7f1c6a651546"
-        }
-    ],
-    "hashType": "sha256"
+    {
+      "date": 1687045908271,
+      "name": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\DCH-2023-18-06-05-error.log",
+      "hash": "76576b8c471c00952614eae2b7efa28fb6e5a540270a7edcc310404364e01784"
+    },
+    {
+      "date": 1687046672192,
+      "name": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\DCH-2023-18-06-06-error.log",
+      "hash": "443a1beb6f3f3829e68fb559948e9a888a875b90bf0373d6f60f117c2253b702"
+    },
+    {
+      "date": 1687085153360,
+      "name": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\DCH-2023-18-06-16-error.log",
+      "hash": "a16781ed666fcc89e95aa6afcfdfa5b407b464516ee018c49ef8e07717647798"
+    },
+    {
+      "date": 1687192931541,
+      "name": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\DCH-2023-19-06-22-error.log",
+      "hash": "0308197efa3852f88d492d07b244e61c638ec2bd2d625c931b1828629337b492"
+    },
+    {
+      "date": 1687194251947,
+      "name": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\DCH-2023-19-06-23-error.log",
+      "hash": "57743c12a414b60b2bd3752043e90810238e46149cc21f0409151f7f8509e3d8"
+    },
+    {
+      "date": 1687257143093,
+      "name": "D:\\Next Level Web Development\\Mission 3\\Module 11\\Digital Cow Hut\\logs\\winston\\errors\\DCH-2023-20-06-16-error.log",
+      "hash": "5268e84ebcd65405df8045d54b280f23a43eabd3f1fc33e6ec2b7f1c6a651546"
+    }
+  ],
+  "hashType": "sha256"
 }
