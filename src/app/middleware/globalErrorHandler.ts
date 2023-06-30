@@ -9,12 +9,13 @@ import handleZodError from '../../errors/handleZodError';
 import { ZodError } from 'zod';
 import config from '../../config';
 import handleCastError from '../../errors/handleCastError';
+import DuplicateKeyError from '../../errors/duplicateError';
 
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
   // res.status(400).json({error: err})
 
   config.env === 'development'
-    ? console.log(`🐱‍🏍 globalErrorHandler ~~`, error)
+    ? errorLogger.error(`🐱‍🏍 globalErrorHandler ~~`, error)
     : errorLogger.error(`🐱‍🏍 globalErrorHandler ~~`, error);
 
   let statusCode = 500;
@@ -37,6 +38,17 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     message = simplifiedError.message;
     errorMessages = simplifiedError.errorMessages;
   } else if (error instanceof ApiError) {
+    statusCode = error?.statusCode;
+    message = error.message;
+    errorMessages = error?.message
+      ? [
+          {
+            path: '',
+            message: error?.message,
+          },
+        ]
+      : [];
+  } else if (error instanceof DuplicateKeyError) {
     statusCode = error?.statusCode;
     message = error.message;
     errorMessages = error?.message

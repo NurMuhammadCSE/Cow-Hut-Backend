@@ -7,7 +7,7 @@ import pick from '../../../shared/pick';
 import { paginationFields } from '../../../constants/pagination';
 import { ICow } from './cow.interface';
 
-const createUser = catchAsync(async (req: Request, res: Response) => {
+const createCow = catchAsync(async (req: Request, res: Response) => {
   const { user } = req.body;
 
   const result = await CowService.createCow(user);
@@ -74,7 +74,7 @@ const deleteCow = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const cowsController = {
-  createUser,
+  createCow,
   getAllCows,
   getSingleCow,
   updateCow,

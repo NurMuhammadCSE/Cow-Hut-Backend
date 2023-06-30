@@ -1,0 +1,74 @@
+Mon Jun 26 2023 16:46:19 } [PH] error: 🐱‍🏍 globalErrorHandler ~~ [
+  {
+    "code": "invalid_type",
+    "expected": "number",
+    "received": "undefined",
+    "path": [
+      "body",
+      "phoneNumber"
+    ],
+    "message": "phoneNumber is Required"
+  },
+  {
+    "expected": "'buyer' | 'seller'",
+    "received": "undefined",
+    "code": "invalid_type",
+    "path": [
+      "body",
+      "role"
+    ],
+    "message": "Role is required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "body",
+      "password"
+    ],
+    "message": "password is Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "undefined",
+    "path": [
+      "body",
+      "name"
+    ],
+    "message": "Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "body",
+      "address"
+    ],
+    "message": "address is Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "number",
+    "received": "undefined",
+    "path": [
+      "body",
+      "budget"
+    ],
+    "message": "budget is Required"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "number",
+    "received": "undefined",
+    "path": [
+      "body",
+      "income"
+    ],
+    "message": "income is Required"
+  }
+]
+Mon Jun 26 2023 16:48:8 } [PH] error: 🐱‍🏍 globalErrorHandler ~~ Unexpected number in JSON at position 206
+Mon Jun 26 2023 16:48:14 } [PH] error: 🐱‍🏍 globalErrorHandler ~~ Unexpected number in JSON at position 206

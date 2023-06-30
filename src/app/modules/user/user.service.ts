@@ -4,12 +4,14 @@ import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import { IUser, IUserFilters } from './user.interface';
 import User from './user.model';
+import ApiError from '../../../errors/ApiError';
+import httpStatus from 'http-status';
 
-const createUser = async (user: IUser): Promise<IUser | null> => {
+const createSeller = async (user: IUser): Promise<IUser | null> => {
   const createdUser = await User.create(user);
 
-  if (!createUser) {
-    throw new Error('Failed to create user!');
+  if (!createSeller) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to create user!');
   }
   return createdUser;
 };
@@ -85,13 +87,14 @@ const updateUser = async (
   });
   return result;
 };
+
 const deleteUser = async (id: string): Promise<IUser | null> => {
   const result = await User.findByIdAndDelete(id);
   return result;
 };
 
 export const UserService = {
-  createUser,
+  createSeller,
   getAllUsers,
   getSingleUser,
   updateUser,

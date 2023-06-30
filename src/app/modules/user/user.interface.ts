@@ -1,13 +1,13 @@
 import { Model } from 'mongoose';
 
 export type IUser = {
-  role: 'seller' | 'buyer';
+  phoneNumber: string;
+  role: 'buyer' | 'seller';
   password: string;
   name: {
     firstName: string;
     lastName: string;
   };
-  phoneNumber: string;
   address: string;
   budget: number;
   income: number;

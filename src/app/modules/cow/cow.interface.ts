@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Model, Schema } from 'mongoose';
 
 export type ICow = {
   name: string;
@@ -24,6 +24,7 @@ export type ICow = {
   weight: number;
   label: 'for sale';
   category: 'Dairy' | 'Beef' | 'DualPurpose';
+  seller: Schema.Types.ObjectId;
 };
 
 export type ICowFilters = {
