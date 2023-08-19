@@ -1,31 +1,39 @@
-import { SortOrder } from 'mongoose';
-import { paginationHelpers } from '../../../helpers/paginationHelper';
-import { IGenericResponse } from '../../../interfaces/common';
+import httpStatus from 'http-status';
+import ApiError from '../../../errors/ApiError';
+import { ICow, ICowFilters } from './cow.inteface';
+import Cow from './cow.model';
+import { checkSeller } from './cow.utils';
 import { IPaginationOptions } from '../../../interfaces/pagination';
-import { ICow, ICowFilters } from './cow.interface';
-import { CowModel } from './cow.model';
+import { paginationHelpers } from '../../../helper/paginationHelpers';
+import { IGenericResponse } from '../../../interfaces/common';
+import { cowSearchableFields } from './cow.constant';
+import { JwtPayload } from 'jsonwebtoken';
 
-const createCow = async (user: ICow): Promise<ICow | null> => {
-  const createdUser = await CowModel.create(user);
-
-  if (!createCow) {
-    throw new Error('Failed to create Cow Model!');
+const createCow = async (payload: ICow): Promise<ICow | null> => {
+  const isSeller = await checkSeller(payload.seller.toString());
+  if (!isSeller) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'This user is not a seller!');
   }
-  return createdUser;
+
+  const result = (await Cow.create(payload)).populate('seller');
+  return result;
 };
 
 const getAllCows = async (
   filters: ICowFilters,
-  paginationOptions: IPaginationOptions
+  paginationsOptions: IPaginationOptions
 ): Promise<IGenericResponse<ICow[]>> => {
-  const { searchTerm, ...filtersData } = filters;
+  const { searchTerm, minPrice, maxPrice, ...filtersData } = filters;
+
+  const { page, limit, skip, sortConditions } =
+    paginationHelpers.calculatePagination(paginationsOptions);
+
   const andConditions = [];
 
-  const cowsSearchableFields = ['name', 'year', 'price'];
-
+  // searchterm implemenation
   if (searchTerm) {
     andConditions.push({
-      $or: cowsSearchableFields.map(field => ({
+      $or: cowSearchableFields.map(field => ({
         [field]: {
           $regex: searchTerm,
           $options: 'i',
@@ -34,6 +42,17 @@ const getAllCows = async (
     });
   }
 
+  // min and max price implemenation
+  if (minPrice || maxPrice) {
+    andConditions.push({
+      price: {
+        $gte: minPrice || 0,
+        $lte: maxPrice || Infinity,
+      },
+    });
+  }
+
+  // filtering implemenation
   if (Object.keys(filtersData).length) {
     andConditions.push({
       $and: Object.entries(filtersData).map(([field, value]) => ({
@@ -42,24 +61,17 @@ const getAllCows = async (
     });
   }
 
-  const { page, limit, skip, sortBy, sortOrder } =
-    paginationHelpers.calculatePagination(paginationOptions);
-
-  const sortConditions: { [key: string]: SortOrder } = {};
-
-  if (sortBy && sortOrder) {
-    sortConditions[sortBy] = sortOrder;
-  }
-
   const whereConditions =
     andConditions.length > 0 ? { $and: andConditions } : {};
 
-  const result = await CowModel.find(whereConditions)
+  const result = await Cow.find(whereConditions)
+    .populate('seller')
     .sort(sortConditions)
     .skip(skip)
     .limit(limit);
 
-  const total = await CowModel.countDocuments();
+  // total documents
+  const total = await Cow.countDocuments(whereConditions);
 
   return {
     meta: {
@@ -72,22 +84,42 @@ const getAllCows = async (
 };
 
 const getSingleCow = async (id: string): Promise<ICow | null> => {
-  const result = await CowModel.findById(id);
+  const result = await Cow.findById(id).populate('seller');
   return result;
 };
 
 const updateCow = async (
   id: string,
+  verifyUser: JwtPayload,
   payload: Partial<ICow>
 ): Promise<ICow | null> => {
-  const result = await CowModel.findOneAndUpdate({ _id: id }, payload, {
-    new: true,
-  });
+  const exitCow = await Cow.findById(id);
+
+  if (!exitCow) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Cow not found!');
+  }
+
+  if (exitCow.seller.toString() !== verifyUser.userId) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'Forbidden !');
+  }
+
+  Object.assign(exitCow, payload);
+
+  const result = (await exitCow.save()).populate('seller');
   return result;
 };
 
-const deleteCow = async (id: string): Promise<ICow | null> => {
-  const result = await CowModel.findByIdAndDelete(id);
+const deleteCow = async (
+  id: string,
+  verifyUser: JwtPayload
+): Promise<ICow | null> => {
+  const result = await Cow.findOneAndDelete({
+    _id: id,
+    seller: verifyUser.userId,
+  });
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Cow not found !');
+  }
   return result;
 };
 

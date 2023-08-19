@@ -1,42 +1,62 @@
 import httpStatus from 'http-status';
-import { Secret } from 'jsonwebtoken';
-import config from '../../../config';
 import ApiError from '../../../errors/ApiError';
-import { jwtHelpers } from '../../../helpers/jwtHelpers';
-import {
-  ILoginUser,
-  ILoginUserResponse,
-  IRefreshTokenResponse,
-} from './auth.interface';
-import { Admin } from '../admin/admin.model';
+import { IUser } from '../user/user.inteface';
+import User from '../user/user.model';
+import { ILoginResponse, ILoginUser } from './auth.interface';
+import { jwtHelpers } from '../../../helper/jwtHelpers';
+import config from '../../../config';
+import { JwtPayload, Secret } from 'jsonwebtoken';
+import Admin from '../admin/admin.model';
 
-const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
-  const { PhoneNumber, password } = payload;
-
-  const isUserExist = await Admin.isUserExist(PhoneNumber);
-
-  if (!isUserExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
+const signup = async (payload: IUser): Promise<IUser | null> => {
+  if (payload.role === 'buyer' && !payload.budget) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Your budget must be greater then 0!'
+    );
   }
 
-  if (
-    isUserExist.password &&
-    !(await Admin.isPasswordMatched(password, isUserExist.password))
-  ) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Password is incorrect');
+  if (payload.role === 'seller') {
+    payload.budget = 0;
   }
 
-  //create access token & refresh token
+  payload.income = 0;
 
-  const { phoneNumber, password: psw } = isUserExist;
+  const result = await User.create(payload);
+  return result;
+};
+
+const loginUser = async (payload: ILoginUser): Promise<ILoginResponse> => {
+  // Check user exit's
+  const user = new User();
+  const userData = await user.userExit(payload.phoneNumber);
+  if (!userData) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found!');
+  }
+
+  // compare password
+  const isMatchedPassword =
+    userData?.password &&
+    (await user.matchedPassword(payload.password, userData.password));
+  if (!isMatchedPassword) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Password doesn't match !");
+  }
+
+  // generate access and refresh token
+  const { _id, role } = userData;
   const accessToken = jwtHelpers.createToken(
-    { phoneNumber, psw },
+    {
+      userId: _id,
+      role: role,
+    },
     config.jwt.secret as Secret,
     config.jwt.expires_in as string
   );
-
   const refreshToken = jwtHelpers.createToken(
-    { phoneNumber, password },
+    {
+      userId: _id,
+      role: role,
+    },
     config.jwt.refresh_secret as Secret,
     config.jwt.refresh_expires_in as string
   );
@@ -47,34 +67,33 @@ const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
   };
 };
 
-const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
-  //verify token
-  // invalid token - synchronous
-  let verifiedToken = null;
+const refreshToken = async (
+  payload: string
+): Promise<ILoginResponse | null> => {
+  // Verify token
+  let verifyToken = null;
   try {
-    verifiedToken = jwtHelpers.verifyToken(
-      token,
-      config.jwt.refresh_secret as Secret
+    verifyToken = jwtHelpers.verifyToken(
+      payload,
+      config.jwt.refresh_secret as string
     );
-  } catch (err) {
-    throw new ApiError(httpStatus.FORBIDDEN, 'Invalid Refresh Token');
+  } catch (error) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'Invalid refresh token!');
   }
 
-  const { userId } = verifiedToken;
+  const { userId } = verifyToken as JwtPayload;
 
-  // tumi delete hye gso  kintu tumar refresh token ase
-  // checking deleted user's refresh token
-
-  const isUserExist = await Admin.isUserExist(userId);
-  if (!isUserExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
+  // Check user exit's
+  const user = (await Admin.findById(userId)) || User.findById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Found!');
   }
-  //generate new token
 
+  // generate a new access token
   const newAccessToken = jwtHelpers.createToken(
     {
-      id: isUserExist.phoneNumber,
-      role: isUserExist.password,
+      userId: user._id,
+      role: user.role,
     },
     config.jwt.secret as Secret,
     config.jwt.expires_in as string
@@ -86,6 +105,7 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
 };
 
 export const AuthService = {
+  signup,
   loginUser,
   refreshToken,
 };

@@ -1,38 +1,35 @@
-import express, { Application, NextFunction, Request, Response } from 'express';
-const app: Application = express();
 import cors from 'cors';
-import httpStatus from 'http-status';
-import router from './app/routes';
-import globalErrorHandler from './app/middleware/globalErrorHandler';
+import express, { Application } from 'express';
+import cookieParser from 'cookie-parser';
+import notFoundHandler from './app/middlewares/notFoundHandler';
+import globalErrorHandler from './app/middlewares/globalErrorHandler';
+import Routes from './app/routes';
+import sendResponse from './shared/sendResponse';
+const app: Application = express();
 
+// cors use
 app.use(cors());
-
-// parser
+app.use(cookieParser());
+// parser use
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
-});
+// Aplication routes
+app.use('/api/v1', Routes);
 
-app.use('/api/v1/', router);
-
-// Handle Not Found
-app.use((req: Request, res: Response, next: NextFunction) => {
-  res.status(httpStatus.NOT_FOUND).json({
-    success: false,
-    message: 'Not Found',
-    errorMessage: [
-      {
-        path: req.originalUrl,
-        message: 'API Not Found',
-      },
-    ],
+// Test
+app.get('/', (req, res) => {
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Cow online hut home page!',
   });
-  next();
 });
 
-// Global Error Handler
+// Global Error Hnadler
 app.use(globalErrorHandler);
+
+// Not Found Handler
+app.use(notFoundHandler);
 
 export default app;

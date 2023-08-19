@@ -1,6 +1,6 @@
 import { Response } from 'express';
 
-type IApiResponse<T> = {
+type ISendResponse<T> = {
   statusCode: number;
   success: boolean;
   message?: string | null;
@@ -12,16 +12,16 @@ type IApiResponse<T> = {
   data?: T | null;
 };
 
-const sendResponse = <T>(res: Response, data: IApiResponse<T>): void => {
-  const responseData: IApiResponse<T> = {
-    statusCode: data.statusCode,
-    success: data.success,
-    message: data.message || null,
-    meta: data.meta || null || undefined,
-    data: data.data || null,
+const sendResponse = <T>(res: Response, payload: ISendResponse<T>): void => {
+  const responseData: ISendResponse<T> = {
+    statusCode: payload.statusCode,
+    success: payload.success,
+    message: payload.message || null,
+    meta: payload.meta || null || undefined,
+    data: payload.data || null,
   };
 
-  res.status(data.statusCode).json(responseData);
+  res.status(payload.statusCode).json(responseData);
 };
 
 export default sendResponse;

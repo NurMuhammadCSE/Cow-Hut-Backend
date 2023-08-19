@@ -1,13 +1,27 @@
 import { Schema, model } from 'mongoose';
-import { IOrder } from './order.interface';
+import { IOrder, OrderModel } from './order.interface';
 
-const OrderSchema: Schema<IOrder> = new Schema<IOrder>({
-  cow: {
-    type: Schema.Types.ObjectId,
+const orderSchema = new Schema<IOrder, OrderModel>(
+  {
+    cow: {
+      type: Schema.Types.ObjectId,
+      ref: 'Cow',
+      required: true,
+    },
+    buyer: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
   },
-  buyer: {
-    type: Schema.Types.ObjectId,
-  },
-});
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+    },
+  }
+);
 
-export const OrderModel = model<IOrder>('Order', OrderSchema);
+const Order = model<IOrder, OrderModel>('Order', orderSchema);
+
+export default Order;

@@ -1,25 +1,12 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { Schema, model } from 'mongoose';
-import { IUser, UserModel } from './user.interface';
+import { IUser, UserModel } from './user.inteface';
+import { userRole } from './user.constant';
+import bcrypt from 'bcryptjs';
 import config from '../../../config';
-import bcrypt from 'bcrypt';
 
 const userSchema = new Schema<IUser, UserModel>(
   {
-    phoneNumber: {
-      type: String,
-      required: true,
-    },
-    role: {
-      type: String,
-      required: true,
-      enum: ['buyer', 'seller'],
-    },
-    password: {
-      type: String,
-      required: true,
-      select: 0,
-    },
     name: {
       firstName: {
         type: String,
@@ -29,6 +16,20 @@ const userSchema = new Schema<IUser, UserModel>(
         type: String,
         required: true,
       },
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: String,
+      enum: userRole,
+      required: true,
+    },
+    phoneNumber: {
+      type: String,
+      unique: true,
+      required: true,
     },
     address: {
       type: String,
@@ -47,29 +48,36 @@ const userSchema = new Schema<IUser, UserModel>(
     timestamps: true,
     toJSON: {
       virtuals: true,
+      transform(doc, ret) {
+        delete ret.password;
+      },
     },
   }
 );
 
-// User.create() / user.save()
-userSchema.pre('save', async function (next) {
-  // hashing user password
-  const user = this;
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_rounds)
-  );
-  next();
-});
+// Check user exit's
+userSchema.methods.userExit = async function (
+  phoneNumber: string
+): Promise<Partial<IUser> | null> {
+  return await User.findOne({ phoneNumber }, { role: 1, password: 1 });
+};
 
-// User.create() / user.save()
+// check or compare password
+userSchema.methods.matchedPassword = async function (
+  textPassword: string,
+  hashPassword: string
+): Promise<boolean> {
+  return await bcrypt.compare(textPassword, hashPassword);
+};
+
+// Hash password using prehook middleware
 userSchema.pre('save', async function (next) {
-  // hashing user password
   const user = this;
   user.password = await bcrypt.hash(
-    user.password,
+    this.password,
     Number(config.bcrypt_salt_rounds)
   );
+
   next();
 });
 

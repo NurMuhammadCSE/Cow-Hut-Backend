@@ -1,76 +1,13 @@
-import { SortOrder } from 'mongoose';
-import { paginationHelpers } from '../../../helpers/paginationHelper';
-import { IGenericResponse } from '../../../interfaces/common';
-import { IPaginationOptions } from '../../../interfaces/pagination';
-import { IUser, IUserFilters } from './user.interface';
-import User from './user.model';
-import ApiError from '../../../errors/ApiError';
 import httpStatus from 'http-status';
+import ApiError from '../../../errors/ApiError';
+import { IUser } from './user.inteface';
+import User from './user.model';
+import { userRole } from './user.constant';
+import { JwtPayload } from 'jsonwebtoken';
 
-const createSeller = async (user: IUser): Promise<IUser | null> => {
-  const createdUser = await User.create(user);
-
-  if (!createSeller) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to create user!');
-  }
-  return createdUser;
-};
-
-const getAllUsers = async (
-  filters: IUserFilters,
-  paginationOptions: IPaginationOptions
-): Promise<IGenericResponse<IUser[]>> => {
-  const { searchTerm, ...filtersData } = filters;
-  const andConditions = [];
-
-  const cowsSearchableFields = ['name', 'year', 'price'];
-
-  if (searchTerm) {
-    andConditions.push({
-      $or: cowsSearchableFields.map(field => ({
-        [field]: {
-          $regex: searchTerm,
-          $options: 'i',
-        },
-      })),
-    });
-  }
-
-  if (Object.keys(filtersData).length) {
-    andConditions.push({
-      $and: Object.entries(filtersData).map(([field, value]) => ({
-        [field]: value,
-      })),
-    });
-  }
-
-  const { page, limit, skip, sortBy, sortOrder } =
-    paginationHelpers.calculatePagination(paginationOptions);
-
-  const sortConditions: { [key: string]: SortOrder } = {};
-
-  if (sortBy && sortOrder) {
-    sortConditions[sortBy] = sortOrder;
-  }
-
-  const whereConditions =
-    andConditions.length > 0 ? { $and: andConditions } : {};
-
-  const result = await User.find(whereConditions)
-    .sort(sortConditions)
-    .skip(skip)
-    .limit(limit);
-
-  const total = await User.countDocuments();
-
-  return {
-    meta: {
-      page,
-      limit,
-      total,
-    },
-    data: result,
-  };
+const getAllUsers = async (): Promise<IUser[]> => {
+  const result = await User.find();
+  return result;
 };
 
 const getSingleUser = async (id: string): Promise<IUser | null> => {
@@ -82,9 +19,34 @@ const updateUser = async (
   id: string,
   payload: Partial<IUser>
 ): Promise<IUser | null> => {
-  const result = await User.findOneAndUpdate({ _id: id }, payload, {
-    new: true,
-  });
+  const exitUser = await User.findById(id);
+  if (!exitUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found!');
+  }
+
+  // Check user is seller. can't update income and budget
+  if (exitUser.role === userRole[0] && (payload.budget || payload.income)) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "You can't not update income and budget"
+    );
+  }
+
+  // Check user is buyer. can't update income
+  if (exitUser.role === userRole[1] && payload.income) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "You can't not update income");
+  }
+
+  const { name, ...userData } = payload;
+  // Dynamic name handling
+  if (name && Object.keys(name).length > 0) {
+    Object.keys(name).forEach(key => {
+      exitUser.name[key as keyof typeof name] = name[key as keyof typeof name]; // exit.name.fistName=user given input
+    });
+  }
+
+  Object.assign(exitUser, userData);
+  const result = await exitUser.save();
   return result;
 };
 
@@ -93,10 +55,48 @@ const deleteUser = async (id: string): Promise<IUser | null> => {
   return result;
 };
 
+const getMyProfile = async (payload: JwtPayload) => {
+  const result = await User.findById(payload.userId);
+  return result;
+};
+
+const myProfileUpdate = async (
+  verifyUser: JwtPayload,
+  payload: Partial<IUser>
+): Promise<IUser | null> => {
+  const exitUser = await User.findById(verifyUser.userId);
+  if (!exitUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found!');
+  }
+
+  // Check user is seller. can't update income and budget
+  if (payload.budget || payload.income || payload.role) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "You can't not update income, budget and role"
+    );
+  }
+
+  const { name, ...userData } = payload;
+
+  // Dynamic name handling
+  if (name && Object.keys(name).length > 0) {
+    Object.keys(name).forEach(key => {
+      exitUser.name[key as keyof typeof name] = name[key as keyof typeof name];
+    });
+  }
+
+  Object.assign(exitUser, userData);
+
+  const result = await exitUser.save();
+  return result;
+};
+
 export const UserService = {
-  createSeller,
   getAllUsers,
   getSingleUser,
   updateUser,
   deleteUser,
+  getMyProfile,
+  myProfileUpdate,
 };

@@ -1,5 +1,11 @@
 import { IGenericErrorMessage } from './error';
 
+export type IGenericErrorResponse = {
+  statusCode: number;
+  message: string;
+  errorMessages: IGenericErrorMessage[];
+};
+
 export type IGenericResponse<T> = {
   meta: {
     page: number;
@@ -9,8 +15,8 @@ export type IGenericResponse<T> = {
   data: T;
 };
 
-export type IGenericErrorResponse = {
-  statusCode: number;
+export type INotFound = {
+  success: false;
   message: string;
   errorMessages: IGenericErrorMessage[];
 };

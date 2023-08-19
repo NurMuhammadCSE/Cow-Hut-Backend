@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "D:\\Next Level Web Development\\Mission 3\\Digital Cow Hut\\logs\\winston\\successes\\.0acd5ce2d95b94dccaf87c90aaf8e984dfa883d4-audit.json",
+    "files": [
+        {
+            "date": 1692430409000,
+            "name": "D:\\Next Level Web Development\\Mission 3\\Digital Cow Hut\\logs\\winston\\successes\\um-2023-19-08-13-success.log",
+            "hash": "005089962dfe116fd223a287b876f987211f02ac57220f37dcab48bbf4182193"
+        }
+    ],
+    "hashType": "sha256"
+}

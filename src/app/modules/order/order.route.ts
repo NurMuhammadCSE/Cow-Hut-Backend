@@ -1,13 +1,29 @@
 import express from 'express';
-import { orderController } from './order.controller';
-import validateRequest from '../../middleware/validateRequest';
-import { orderValidation } from './order.validation';
+import { OrderController } from './order.controller';
+import validateRequestHandler from '../../middlewares/validateRequestHandler';
+import { OrderValidation } from './order.validation';
+import auth from '../../middlewares/auth';
+import { USER_ROLE } from '../../../enum';
+
 const router = express.Router();
 
 router.post(
-  '/create-order',
-  validateRequest(orderValidation.orderZodValidation),
-  orderController.createOrder
+  '/',
+  validateRequestHandler(OrderValidation.createOrderZodSchema),
+  auth(USER_ROLE.BUYER),
+  OrderController.createOrder
 );
 
-export const OrdersRoutes = router;
+router.get(
+  '/:id',
+  auth(USER_ROLE.ADMIN, USER_ROLE.BUYER, USER_ROLE.SELLER),
+  OrderController.getSingleOrder
+);
+
+router.get(
+  '/',
+  auth(USER_ROLE.ADMIN, USER_ROLE.BUYER, USER_ROLE.SELLER),
+  OrderController.getAllOrders
+);
+
+export const OrderRoutes = router;

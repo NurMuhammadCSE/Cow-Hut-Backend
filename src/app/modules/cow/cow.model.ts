@@ -1,7 +1,8 @@
 import { Schema, model } from 'mongoose';
-import { ICow } from './cow.interface';
+import { CowModel, ICow } from './cow.inteface';
+import { categories, labels, locations } from './cow.constant';
 
-const CowSchema: Schema<ICow> = new Schema<ICow>(
+const cowSchema = new Schema<ICow, CowModel>(
   {
     name: {
       type: String,
@@ -9,61 +10,53 @@ const CowSchema: Schema<ICow> = new Schema<ICow>(
     },
     age: {
       type: Number,
+      min: 1,
       required: true,
     },
     price: {
       type: Number,
+      min: 1,
       required: true,
     },
     location: {
       type: String,
-      enum: [
-        'Dhaka',
-        'Chattogram',
-        'Barishal',
-        'Rajshahi',
-        'Sylhet',
-        'Comilla',
-        'Rangpur',
-        'Mymensingh',
-      ],
+      enum: locations,
       required: true,
     },
     breed: {
       type: String,
-      enum: [
-        'Brahman',
-        'Nellore',
-        'Sahiwal',
-        'Gir',
-        'Indigenous',
-        'Thaparkar',
-        'Kankrej',
-      ],
       required: true,
     },
     weight: {
       type: Number,
+      min: 1,
       required: true,
     },
     label: {
       type: String,
+      enum: labels,
+      default: labels[0],
       required: true,
-      enum: ['for sale', 'sold out'],
     },
     category: {
       type: String,
-      enum: ['Dairy', 'Beef', 'DualPurpose'],
+      enum: categories,
       required: true,
     },
     seller: {
       type: Schema.Types.ObjectId,
-      ref: 'seller',
+      ref: 'User',
+      required: true,
     },
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+    },
   }
 );
 
-export const CowModel = model<ICow>('Cow', CowSchema);
+const Cow = model<ICow, CowModel>('Cow', cowSchema);
+
+export default Cow;

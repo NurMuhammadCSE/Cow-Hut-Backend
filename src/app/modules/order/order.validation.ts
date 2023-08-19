@@ -1,16 +1,18 @@
 import { z } from 'zod';
 
-const orderZodValidation = z.object({
+const createOrderZodSchema = z.object({
   body: z.object({
     cow: z.string({
-      required_error: 'cow is Required',
+      required_error: 'Cow is required!',
+      invalid_type_error: 'Invalid Cow ID!',
     }),
     buyer: z.string({
-      required_error: 'Buyer IS Required',
+      required_error: 'Buyer is required!',
+      invalid_type_error: 'Invalid Buyer ID!',
     }),
   }),
 });
 
-export const orderValidation = {
-  orderZodValidation,
+export const OrderValidation = {
+  createOrderZodSchema,
 };

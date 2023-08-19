@@ -1,19 +1,38 @@
 import express from 'express';
-import { cowsController } from './cow.controller';
+import { CowController } from './cow.controller';
+import validateRequestHandler from '../../middlewares/validateRequestHandler';
+import auth from '../../middlewares/auth';
+import { CowValidation } from './cow.validation';
+import { USER_ROLE } from '../../../enum';
+
 const router = express.Router();
 
-router.post('/create-cow', cowsController.createCow);
+router.post(
+  '/',
+  validateRequestHandler(CowValidation.createCowZodSchema),
+  auth(USER_ROLE.SELLER),
+  CowController.createCow
+);
 
-// router.post('/create-cow',
-//     validateRequest(cowValidation.cowZodSchema),
-//     cowsController.createUser);
+router.patch(
+  '/:id',
+  validateRequestHandler(CowValidation.updateCowZodSchema),
+  auth(USER_ROLE.SELLER),
+  CowController.updateCow
+);
 
-router.get('/:id', cowsController.getSingleCow);
+router.delete('/:id', auth(USER_ROLE.SELLER), CowController.deleteCow);
 
-router.get('/', cowsController.getAllCows);
+router.get(
+  '/:id',
+  auth(USER_ROLE.ADMIN, USER_ROLE.BUYER, USER_ROLE.SELLER),
+  CowController.getSingleCow
+);
 
-router.patch('/:id', cowsController.updateCow);
+router.get(
+  '/',
+  auth(USER_ROLE.ADMIN, USER_ROLE.BUYER, USER_ROLE.SELLER),
+  CowController.getAllCows
+);
 
-router.delete('/:id', cowsController.deleteCow);
-
-export const CowsRoutes = router;
+export const CowRoutes = router;

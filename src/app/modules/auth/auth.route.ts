@@ -1,18 +1,26 @@
 import express from 'express';
-import validateRequest from '../../middleware/validateRequest';
+import validateRequestHandler from '../../middlewares/validateRequestHandler';
+import { UserValidation } from '../user/user.validation';
 import { AuthController } from './auth.controller';
 import { AuthValidation } from './auth.validation';
+
 const router = express.Router();
 
 router.post(
-  '/admins/login',
-  validateRequest(AuthValidation.loginZodSchema),
+  '/signup',
+  validateRequestHandler(UserValidation.createUserZodSchema),
+  AuthController.signup
+);
+
+router.post(
+  '/login',
+  validateRequestHandler(AuthValidation.loginZodSchema),
   AuthController.loginUser
 );
 
 router.post(
   '/refresh-token',
-  validateRequest(AuthValidation.refreshTokenZodSchema),
+  validateRequestHandler(AuthValidation.refreshTokenZodSchema),
   AuthController.refreshToken
 );
 
